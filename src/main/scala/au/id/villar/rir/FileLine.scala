@@ -1,7 +1,3 @@
 package au.id.villar.rir
 
-abstract class FileLine {
-
-
-
-}
+abstract class FileLine

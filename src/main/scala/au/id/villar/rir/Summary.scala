@@ -1,5 +1,3 @@
 package au.id.villar.rir
 
-class Summary(registry: String, resourceType: String, count: Int) extends FileLine {
-
-}
+class Summary(val registry: String, val resourceType: String, val count: Int) extends FileLine

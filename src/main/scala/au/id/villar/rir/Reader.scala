@@ -4,19 +4,13 @@ import java.io.BufferedReader
 
 import scala.collection.mutable.ListBuffer
 
-trait Reader {
-
-  def read(reader: java.io.Reader, listener: RecordListener)
-
-}
-
-object Reader extends Reader {
+object Reader {
 
   private val rirs = List("afrinic", "apnic", "arin", "iana", "lacnic", "ripencc")
   private val types = List("asn", "ipv4", "ipv6")
   private val splitPattern = "\\|".r
 
-  override def read(reader: java.io.Reader, listener: RecordListener) = {
+  def read(reader: java.io.Reader, listener: RecordListener) = {
 
     val lineReader = new BufferedReader(reader)
     var line: String = lineReader.readLine()
@@ -30,7 +24,6 @@ object Reader extends Reader {
       .map(splitPattern split _)
       .filter( _.length > 0)
       .foreach(createFromFields)
-
 
     def createFromFields(fields: Array[String]) = {
 
