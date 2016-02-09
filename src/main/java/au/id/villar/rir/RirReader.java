@@ -1,8 +1,11 @@
 package au.id.villar.rir;
 
+import java.io.IOException;
+
 public interface RirReader {
 
-	void read(java.io.Reader reader, RecordListener listener);
+	@SuppressWarnings("unused")
+	void read(java.io.Reader reader, RecordListener listener) throws IOException;
 
 }
 
