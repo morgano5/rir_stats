@@ -14,10 +14,12 @@ object Reader {
 
     val lineReader = new BufferedReader(reader)
     var line: String = lineReader.readLine()
-    val buffer = new ListBuffer[String]
     val dateParser = new java.text.SimpleDateFormat("yyyyMMdd")
+//    val buffer = new ListBuffer[String]
 
-    while(line != null) { buffer += line; line = lineReader.readLine() }
+//    while(line != null) { buffer += line; line = lineReader.readLine() }
+
+    val buffer = new LineReaderIterator(reader)
 
     buffer.filter(_.length > 0)
       .filter(!_.startsWith("#"))
@@ -51,6 +53,27 @@ object Reader {
 
       }
 
+    }
+
+  }
+
+  private class LineReaderIterator(reader: java.io.Reader) extends Iterator[String] {
+
+    private val flow = new BufferedReader(reader)
+    private var nextLine: String = null
+    private var endReached = false
+
+    override def hasNext: Boolean = {
+      if(nextLine != null) return true
+      if(!endReached) nextLine = flow.readLine()
+      if(nextLine == null) endReached = true
+      !endReached
+    }
+
+    override def next() = {
+      val v = nextLine
+      nextLine = null
+      v
     }
 
   }
