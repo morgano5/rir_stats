@@ -40,14 +40,12 @@ public class RirReaderTest {
 			public void onVersion(VersionLine version) {
 				counter.count++;
 				counter.versionCount++;
-				System.out.println("Version line: " + version.registry());
 			}
 
 			@Override
 			public void onNonValidLine(NonValidLine error) {
 				counter.count++;
 				counter.nonValidLineCount++;
-				System.out.println("Error line: " + error.fields());
 			}
 
 			@Override
