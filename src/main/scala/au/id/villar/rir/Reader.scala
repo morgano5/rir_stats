@@ -23,9 +23,14 @@ import java.io.BufferedReader
 
 object Reader {
 
+  private val supportedVersions = List("2", "2.3")
+
   private val rirs = List("afrinic", "apnic", "arin", "iana", "lacnic", "ripencc")
   private val types = List("asn", "ipv4", "ipv6")
+  private val status = List("available", "allocated", "assigned", "reserved")
+
   private val splitPattern = "\\|".r
+  private val versionPattern = "[0-9.]+".r
 
   def read(reader: java.io.Reader, listener: RecordListener) = {
 
@@ -33,29 +38,41 @@ object Reader {
 
     val buffer = new LineReaderIterator(reader)
 
-    buffer.filter(_.length > 0)
+    buffer
+      .map(_.trim)
+      .filter(_.length > 0)
       .filter(!_.startsWith("#"))
       .map(splitPattern split _)
-      .filter( _.length > 0)
       .foreach(createFromFields)
 
     def createFromFields(fields: Array[String]) = {
 
       try {
-        if (fields(0) == "2") {
+        if (versionPattern.pattern.matcher(fields(0)).matches()) {
+
+          if(!supportedVersions.contains(fields(0))) throw new RuntimeException("Version not supported: " + fields(0))
+
+          val date = if(!fields(4).isEmpty) dateParser.parse(fields(4)) else null
 
           listener.onVersion(new VersionLine(rirs(rirs.indexOf(fields(1))), fields(2), fields(3).toInt,
-            dateParser.parse(fields(4)), dateParser.parse(fields(5)), fields(6).toInt))
+            date, dateParser.parse(fields(5)), fields(6).toInt))
 
         } else if (fields.length == 6 && fields(5) == "summary") {
 
           listener.onSummary(new Summary(rirs(rirs.indexOf(fields(0))),
             types(types.indexOf(fields(2))), fields(4).toInt))
 
-        } else {
+        } else if(validateRecord(fields)) {
 
-          listener.onRecord(new Record(fields(0), fields(1), fields(2), fields(3), fields(4).toInt,
-            dateParser.parse(fields(5)), fields(6), fields.toList.drop(7)))
+          val date = if(fields(5) != "00000000" && !fields(5).isEmpty) dateParser.parse(fields(5)) else null
+          val cc = if(fields(1).length == 2) fields(1) else null
+
+          listener.onRecord(new Record(fields(0), cc, fields(2), fields(3), fields(4).toInt,
+            date, fields(6),
+            fields.toList.drop(7)))
+
+        } else {
+          listener.onNonValidLine(new NonValidLine(fields.toList))
 
         }
 
@@ -65,6 +82,15 @@ object Reader {
 
       }
 
+    }
+
+    def validateRecord(fields: Array[String]): Boolean = {
+      if(fields.length < 7 ) return false
+      if(!rirs.contains(fields(0))) return false
+      if(fields(1).length != 2 && !fields(1).isEmpty) return false
+      if(!types.contains(fields(2))) return false
+      if(!status.contains(fields(6))) return false
+      true
     }
 
   }
