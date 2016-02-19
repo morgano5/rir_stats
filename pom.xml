@@ -1,25 +1,28 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
+
   <groupId>au.id.villar.rir</groupId>
   <artifactId>rir-stats</artifactId>
   <version>1.2</version>
-  <name>${project.artifactId}</name>
-  <description>My wonderfull scala app</description>
-  <inceptionYear>2015</inceptionYear>
+
+  <name>Rir Stats</name>
+  <description>Small library to parse RIR files</description>
+  <inceptionYear>2016</inceptionYear>
+
   <licenses>
     <license>
-      <name>My License</name>
-      <url>http://....</url>
-      <distribution>repo</distribution>
+      <name>GNU General Public License, Version 3</name>
+      <url>http://www.gnu.org/licenses/gpl-3.0.html</url>
+      <distribution>manual</distribution>
     </license>
   </licenses>
 
   <properties>
-    <maven.compiler.source>1.6</maven.compiler.source>
-    <maven.compiler.target>1.6</maven.compiler.target>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
     <encoding>UTF-8</encoding>
     <scala.version>2.11.5</scala.version>
-    <scala.compat.version>2.11</scala.compat.version>
   </properties>
   <dependencies>
     <dependency>
@@ -28,35 +31,17 @@
       <version>${scala.version}</version>
     </dependency>
 
-    <!-- Test -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.specs2</groupId>
-      <artifactId>specs2-core_${scala.compat.version}</artifactId>
-      <version>2.4.16</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.scalatest</groupId>
-      <artifactId>scalatest_${scala.compat.version}</artifactId>
-      <version>2.2.4</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
-<!--
-    <sourceDirectory>src/main/scala</sourceDirectory>
-    <testSourceDirectory>src/test/scala</testSourceDirectory>
--->
     <plugins>
       <plugin>
-        <!-- see http://davidb.github.com/scala-maven-plugin -->
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
         <version>3.2.2</version>
@@ -70,18 +55,8 @@
             <configuration>
               <recompileMode>incremental</recompileMode>
               <args>
-                <!--
-                <arg>-make:transitive</arg>
-                -->
                 <arg>-deprecation</arg>
-                <!--
-                <arg>-dependencyfile</arg>
-                <arg>${project.build.directory}/.scala_dependencies</arg>
-                -->
-                <arg>-target:jvm-1.8</arg>
-                <!--
-                <arg>-make:transitivenocp</arg>
-                -->
+                <arg>-target:jvm-${maven.compiler.target}</arg>
               </args>
             </configuration>
           </execution>
@@ -92,8 +67,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.5</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
         </configuration>
       </plugin>
       <plugin>
@@ -104,8 +79,6 @@
           <argLine>-Xmx128M</argLine>
           <useFile>false</useFile>
           <disableXmlReport>true</disableXmlReport>
-          <!-- If you have classpath issue like NoDefClassError,... -->
-          <!-- useManifestOnlyJar>false</useManifestOnlyJar -->
           <includes>
             <include>**/*Test.*</include>
             <include>**/*Suite.*</include>
